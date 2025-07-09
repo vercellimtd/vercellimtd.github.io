@@ -1,0 +1,35 @@
+{% if item.hidden == "true" %}
+{% else %}
+{% if item.status == "present" %}
+	{% assign current_i = "now" | date: "%Y" %}
+{% elsif item.status == "in press" OR item.status == "in prep" %}
+	{% assign current_i = item.status %}
+{% else %}
+	{% assign current_i = item.date | date: "%Y" %}
+{% endif %}
+<div class="grid-x margin-gutters padding-gutters citation{% if current_i != previous_i %} newyear{% endif %}">
+	<div class="cell small-12 medium-1">
+		{% if current_i != previous_i %}
+		<h4 class="year">
+			{% if item.status == "present" %}
+				{{ current_i }}
+			{% elsif item.status == "in press" OR item.status == "in prep" OR item.status == "under review" %}
+				{{ item.status }}
+			{% else %}
+				{{ item.date | date: "%Y" }}
+			{% endif %}
+		</h4>
+		{% endif %}
+	</div>
+	<div class="cell small-12 medium-11">
+		{{item.citation | markdownify}}{% if item.doi != null and item.doi != "" %} DOI: <a href="{{ item.doi }}">{{ item.doi }}</a>.{% endif %}{% if item.link != null and item.link != "" %} <a href="{{ item.link }}">{{ item.link }}</a>.{% endif %}
+	</div>
+</div>
+{% if item.status == "present" %}
+	{% assign previous_i = "now" | date: "%Y" %}
+{% elsif item.status == "in press" OR item.status == "in prep" %}
+	{% assign previous_i = item.status %}
+{% else %}
+	{% assign previous_i = item.date | date: "%Y" %}
+{% endif %}
+{% endif %}

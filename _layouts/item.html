@@ -1,0 +1,137 @@
+---
+layout: page
+format: item
+---
+{% capture FileName %}{{ page.url | split: '/' | last }}{% endcapture %}
+{% capture ItemID %}{{ FileName | split: '.' | first }}{% endcapture %}
+
+<div class="grid-container">
+	<div class="grid-x grid-padding-x">
+<div class="cell small-12 medium-6 large-4 card">
+	<div class="card-thumbnail float-left">
+
+{% if page.embedurl %}
+	{% if page.embedurl contains "youtu.be" %}
+		{% assign embedsplit = page.embedurl | split: "?" %}
+		{% assign embedarray = embedsplit[0] | split: "/" %}
+		{% assign embedcode = embedarray[3] %}
+	{% elsif page.embedurl contains "youtube.com" %}
+		{% assign embedarray = page.embedurl | split: "=" %}
+		{% assign embedcode = embedarray[1] %}
+	{% endif %}
+	{% if embedcode.size > 0 %}
+	<video controls class="responsive-embed">
+	  <iframe width="350" height="350" src="https://www.youtube.com/embed/{{ embedcode }}" frameborder="0" allowfullscreen></iframe>
+	</video>
+	{% endif %}
+{% else %}
+	{% if item.photo %}
+		{% assign ItemPhotoResult = item.photo %}
+	{% else %}
+		{% capture ItemImagePath %}{{ urlitemimg }}{{ ItemID }}{% endcapture %}
+		{% for static_file in site.static_files %}
+			{% if static_file.path contains ItemImagePath %}
+				{% unless static_file.path contains ".md" %}
+					{% capture ItemPhotoResult %}{{site.baseurl}}{{static_file.path}}{% endcapture %}
+					{% endunless %}
+				{% break %}
+			{% endif %}
+		{% endfor %}
+	{% endif %}
+
+{% if ItemPhotoResult.size > 0 %}
+		<img class="square thumbnail" src="{{ ItemPhotoResult }}" alt="{{ page.shortdesc }}">
+{% endif %}
+
+{% capture ItemTranscript %}{{ ItemID }}_Transcript{% endcapture %}
+{% for static_file in site.static_files %}
+	{% if static_file.path contains ItemTranscript %}
+		{% capture ItemTranscriptResult %}{{site.baseurl}}{{static_file.path}}{% endcapture %}
+	{% endif %}
+{% endfor %}
+{% endif %}
+
+{% capture ItemOralHistory %}{{ ItemID }}.mp3{% endcapture %}
+{% for static_file in site.static_files %}
+	{% if static_file.path contains ItemOralHistory %}
+		{% capture ItemOralHistoryResult %}{{site.baseurl}}{{static_file.path}}{% endcapture %}
+	{% endif %}
+{% endfor %}
+
+{% if ItemOralHistoryResult %}
+<figure role="figure" aria-label="Interview Audio Player">
+  <figcaption>Listen to the story</figcaption>
+  <audio controls src="{{ItemOralHistoryResult}}"></audio>
+  <p><a href="{{ItemOralHistoryResult}}" role="link" aria-label="Item Interview Audio Download"> Download audio</a>{% if ItemTranscriptResult %} | 
+<a href="{{ItemTranscriptResult}}" role="link" aria-label="Item Interview Transcript Download">Download transcript</a>
+{% endif %}
+
+</figure>
+{% endif %}
+</div>
+</div>
+<div class="cell medium-6 large-8">
+
+{% assign dc-base = "dublin-core-" %}
+<div class="element-set">
+<h2 id="Dublin Core">About</h2>
+<p class="quiet">Dublin Core</p>
+<table class="stack hover">
+{% for var in page %}
+	{% if page[var] != "" and page[var] %}
+		{% for key in site.data.metadata.fields %}
+			{% if key[0] == var and key[1] %}
+				{% if key[0] == "datedisplay" %}
+					{% capture dc-type %} {{ dc-base }}date{% endcapture %}
+				{% else %}
+					{% capture dc-type %} {{ dc-base }}{{ key[0] }}{% endcapture %}
+				{% endif %}
+				{% if page[var].first %}
+					{% assign varvalue = page[var] | uniq | join: ", " %}
+				{% else %}
+					{% assign varvalue = page[var] %}
+				{% endif %}
+				<tr>
+					<td><div id="{{ dc-type }}" class="element">{{ key[1] }}</div></td>
+					<td><div class="element-text">{{ varvalue }}</div></td>
+				</tr>
+			{% endif %}
+		{% endfor %}
+	{% endif %}
+{% endfor %}		
+</table>
+
+</div>
+</div>
+</div>
+</div>
+<div class="grid-container">
+	<div class="grid-x grid-padding-x">
+		<div class="large-12 cell">
+			<!--page-->
+{{ content }}
+
+
+
+{% capture ItemImagePath %}{{ urlitemimg }}{{ ItemID }}{% endcapture %}
+{% for static_file in site.static_files %}
+{% if static_file.path contains ItemImagePath %}
+{% unless static_file.path contains 'transcript' or static_file.path contains 'subitem' %}
+{% capture ItemPhotoResult %}{{site.baseurl}}{{static_file.path}}{% endcapture %}
+<img class="featured-image img-fluid object-photo" src="{{ ItemPhotoResult }}" alt="{{ page.title }}">
+{% endunless %}
+{% endif %}
+{% endfor %}
+
+{% capture ItemTranscriptMD %}{{ ItemID }}.md{% endcapture %}
+{% for static_file in site.static_files %}
+	{% if static_file.path contains ItemTranscriptMD %}
+		include {{site.baseurl}}{{static_file.path}}
+	{% endif %}
+{% endfor %}
+
+<!-- {: .my-class } -->  
+
+		</div>
+	</div>
+</div>

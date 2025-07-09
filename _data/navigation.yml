@@ -1,11 +1,16 @@
 # Site navigation links
 
-- title: Our Community
-  url: /
+- title: MTD Home
+  url: https://tesorodelduomovc.it
   excerpt:
   image:
 
-- title: Our Collection
+- title: Featured Items/Articoli in Evidenza
   url: /collection
+  excerpt:
+  image:
+
+- title: Inventory/Inventario
+  url: /inventory
   excerpt:
   image:
