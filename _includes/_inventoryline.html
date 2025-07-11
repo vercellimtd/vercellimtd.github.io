@@ -1,75 +1,34 @@
+
 {% capture FileName %}{{ item.url | split: '/' | last }}{% endcapture %}
 {% capture ItemID %}{{ FileName | split: '.' | first }}{% endcapture %}
 
-{% assign catlist = "" | split: ',' %}
-{% if item.categories %}
-{% for cat in item.categories %}
-{% assign catdash = cat | replace: " ", "-" %}
-{% assign catlist = catlist | push: catdash %}
-{% endfor %}
+{%- assign format_list = "" | split: "," -%}
+{%- if item.Type and item.Type != "" -%}
+  {%- assign format_list = format_list | push: item.Type -%}
+{%- endif -%}
+{%- if item.Collection and item.Collection != "" -%}
+  {%- assign format_list = format_list | push: item.Collection -%}
+{%- endif -%}
+{%- if item.Relation and item.Relation != "" -%}
+  {%- assign format_list = format_list | push: item.Relation -%}
+{%- endif -%}
+
+{%- assign catlist = "" | split: ',' -%}
+{% if item.Categories %}
+  {% for cat in item.Categories %}
+    {% assign catlist = catlist | push: cat %}
+  {% endfor %}
+{% endif %}
 {% assign uniqueCategories = catlist | uniq %}
-{%endif%}
 
-{% assign formlist = "" | split: ',' %}
-{% if item.format %}
-{% for format in item.format %}
-{% assign formdash = form | replace: " ", "-" %}
-{% assign formlist = formlist | push: formdash %}
-{% endfor %}
-{% assign uniqueFormats = formlist | uniq %}
-{%endif%}
-
-{% assign CurrentPhotoResult = ItemPhotoResult %}
-{% if item.itemphoto %}
-{% assign ItemPhotoResult = item.photo %}
-{% else %}
-{% capture ItemImagePath %}{{ urlitemimg }}{{ ItemID }}{% endcapture %}
-{% for static_file in site.static_files %}
-{% if static_file.path contains ItemImagePath %}
-{% unless static_file.path contains ".md" %}
-{% capture ItemPhotoResult %}{{site.baseurl}}{{static_file.path}}{% endcapture %}
-{% endunless %}
-{% break %}
-{% endif %}
-{% endfor %}
-{% endif %}
-{% if CurrentPhotoResult == ItemPhotoResult %}
-{% capture ItemPhotoResult %}{{site.baseurl}}{{ site.urlimg }}{{site.placeholderimg}}{% endcapture %}
-{% endif %}
-
-	<div role="link" aria-label="{{ item.title }} thumbnail" data-categories="{{ item.categories | join: ',' }}" data-formats="{{ item.format | join: ',' }}" class="cell filter-item small-12 medium-4 large-3 card filter-simple-item {% if item.group%}{{item.group}} {% endif %}{% if uniquetags%}{{ uniquetags | join: " " }}{% endif %}">
-	{% if ItemPhotoResult != empty %}
-	<div class="card-thumbnail">
-		<a href="{{ site.baseurl }}{{ item.url }}" role="link" aria-label="{{ item.title }}">
-		<img class="square thumbnail" src="{{ ItemPhotoResult }}" alt="{{ page.shortdesc }}"></a>
-	</div>
-	{% endif %}
-  <h3 class="card-title accentbg"><a href="{{ site.baseurl }}{{ item.url }}">{{ item.title }}</a></h3>
-  <ul class="card-desc">
-  
-  	{% for var in item %}
-	{% if item[var] != "" and item[var] %}
-		{% for key in site.data.metadata.fields %}
-			{% if key[0] == var and key[1] %}
-				{% capture dc-type %} {{ dc-base }}{{ key[0] }} {% endcapture %}
-				{% if item[var].first %}
-					{% assign varvalue = item[var] | uniq | join: ", " %}
-				{% else %}
-					{% assign varvalue = item[var] %}
-				{% endif %}
-				<tr>
-					<td><div id="{{ dc-type }}" class="element">{{ key[1] }}</div></td>
-					<td><div class="element-text">{{ varvalue }}</div></td>
-				</tr>
-			{% endif %}
-		{% endfor %}
-	{% endif %}
-{% endfor %}
-
+<div class="cell filter-simple-item {{ item.Type }} {{ item.Collection | replace: ', ', ' ' }} {{ item.Relation }}"
+     data-categories="{{ uniqueCategories | join: ',' }}"
+     data-formats="{{ format_list | join: ',' }}"
+     style="padding-top: 10px;">
+  {% if item.Identifier %}<strong>{{ item.Identifier }}.</strong> {% endif %}
+  <strong>{{ item.Title }}</strong>. <em>{{ item.Temporal }}</em> ({{ item.Collection }} {{ item.Relation }} {{ item.StoredInDisplay }}).
+  {{ item.Creator }}{% if item.Author %}, {{ item.Author }}{% endif %}.
+  {{ item.Description }}.
+  {% if item.CEIOA %}CEI/OA: {{ item.CEIOA }}. {% endif %}
+  {% if item.MiBACT1998 %}MiBACT 1988: {{ item.MiBACT1998 }}.{% endif %}
 </div>
-
-<style>
-	.card-desc{
-		text-align: left;
-	}
-</style>
