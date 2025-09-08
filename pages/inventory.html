@@ -126,31 +126,49 @@ END MANUAL CHECKBOXES-->
   {% for typeGroup in groupedTypes %}
     {% assign type = typeGroup.name %}
     {% if type and type != "" %}
-    <div class="checkbox-wrapper">
-      <input type="checkbox" class="format-checkbox" data-level="type" data-value="{{ type }}" id="type-{{ forloop.index }}">
-      <label for="type-{{ forloop.index }}"><strong>{{ type }}</strong></label>
-    </div>
+      {% assign type_id = type | slugify: 'ascii' %}
 
-    {% assign collections = typeGroup.items | map: "Collection" | uniq | sort %}
-    {% for collection in collections %}
-      {% if collection and collection != "" %}
-      <div class="checkbox-wrapper" style="margin-left: 1em;">
-        <input type="checkbox" class="format-checkbox" data-level="collection" data-value="{{ collection }}" id="coll-{{ forloop.parentloop.index }}-{{ forloop.index }}">
-        <label for="coll-{{ forloop.parentloop.index }}-{{ forloop.index }}">{{ collection }}</label>
+      <div class="checkbox-wrapper">
+        <input type="checkbox"
+               class="format-checkbox"
+               data-level="type"
+               data-value="{{ type }}"
+               id="type-{{ type_id }}">
+        <label for="type-{{ type_id }}"><strong>{{ type }}</strong></label>
       </div>
 
-      {% assign filtered_items = typeGroup.items | where: "Collection", collection %}
-      {% assign relations = filtered_items | map: "Relation" | uniq | sort %}
-      {% for relation in relations %}
-        {% if relation and relation != "" %}
-        <div class="checkbox-wrapper" style="margin-left: 2em;">
-          <input type="checkbox" class="format-checkbox" data-level="relation" data-value="{{ relation }}" id="rel-{{ forloop.parent.parentloop.index }}-{{ forloop.parent.index }}-{{ forloop.index }}">
-          <label for="rel-{{ forloop.parent.parentloop.index }}-{{ forloop.parent.index }}-{{ forloop.index }}">{{ relation }}</label>
-        </div>
+      {% assign collections = typeGroup.items | map: "Collection" | uniq | sort %}
+      {% for collection in collections %}
+        {% if collection and collection != "" %}
+          {% assign coll_id = collection | slugify: 'ascii' %}
+
+          <div class="checkbox-wrapper" style="margin-left: 1em;">
+            <input type="checkbox"
+                   class="format-checkbox"
+                   data-level="collection"
+                   data-value="{{ collection }}"
+                   id="coll-{{ type_id }}-{{ coll_id }}">
+            <label for="coll-{{ type_id }}-{{ coll_id }}">{{ collection }}</label>
+          </div>
+
+          {% assign filtered_items = typeGroup.items | where: "Collection", collection %}
+          {% assign relations = filtered_items | map: "Relation" | uniq | sort %}
+          {% for relation in relations %}
+            {% if relation and relation != "" %}
+              {% assign rel_id = relation | slugify: 'ascii' %}
+
+              <div class="checkbox-wrapper" style="margin-left: 2em;">
+                <input type="checkbox"
+                       class="format-checkbox"
+                       data-level="relation"
+                       data-value="{{ relation }}"
+                       id="rel-{{ type_id }}-{{ coll_id }}-{{ rel_id }}">
+                <label for="rel-{{ type_id }}-{{ coll_id }}-{{ rel_id }}">{{ relation }}</label>
+              </div>
+            {% endif %}
+          {% endfor %}
         {% endif %}
       {% endfor %}
-      {% endif %}
-    {% endfor %}
     {% endif %}
   {% endfor %}
 </div>
