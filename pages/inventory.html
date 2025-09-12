@@ -179,42 +179,75 @@ END MANUAL CHECKBOXES-->
 
 <!-- Inventory Listing -->
 <div id="inventory-sections">
-  {% assign typeGroups = site.data.MTDVInventario | group_by: "Type" %}
-  {% for typeGroup in typeGroups %}
-    {% assign type = typeGroup.name %}
-    {% if type != "" %}
-    <div class="inventory-type-group" data-type="{{ type }}">
-      <h2 class="type-heading">{{ type }}</h2>
+  {%- assign typeGroups = site.data.MTDVInventario | group_by: "Type" -%}
 
-      {% assign items_in_type = typeGroup.items %}
-      {% assign collectionGroups = items_in_type | group_by: "Collection" %}
-      {% for collectionGroup in collectionGroups %}
-        {% assign collection = collectionGroup.name %}
-        <div class="inventory-collection-group" data-collection="{{ collection }}">
-          {% if collection != "" %}
-          <h3 class="collection-heading" style="margin-left: 1em;">{{ collection }}</h3>
-          {% endif %}
+  {%- for typeGroup in typeGroups -%}
+    {%- assign type = typeGroup.name -%}
+    {%- assign items_in_type = typeGroup.items -%}
+    {%- assign collectionGroups = items_in_type | group_by: "Collection" -%}
 
-          {% assign items_in_collection = collectionGroup.items %}
-          {% assign relationGroups = items_in_collection | group_by: "Relation" %}
-          {% for relationGroup in relationGroups %}
-            {% assign relation = relationGroup.name %}
-            <div class="inventory-relation-group" data-relation="{{ relation }}">
-              {% if relation != "" %}
-              <h4 class="relation-heading" style="margin-left: 2em;">{{ relation }}</h4>
-              {% endif %}
-              {% for item in relationGroup.items %}
-                {% include _inventoryline.html %}
-              {% endfor %}
-            </div>
-          {% endfor %}
-        </div>
-      {% endfor %}
-    </div>
-    {% endif %}
-  {% endfor %}
+    {%- comment -%}
+    Render ALL collections (each decides if it has visible relations/items).
+    Only output the Type header if ANY collection produced visible output.
+    {%- endcomment -%}
+    {%- capture type_body -%}
+      {%- for collectionGroup in collectionGroups -%}
+        {%- assign collection = collectionGroup.name -%}
+        {%- assign items_in_collection = collectionGroup.items -%}
+        {%- assign relationGroups = items_in_collection | group_by: "Relation" -%}
+
+        {%- comment -%}
+        Render ALL relations (each decides if it has visible items).
+        Only output the Collection header if ANY relation produced visible output.
+        {%- endcomment -%}
+        {%- capture collection_body -%}
+          {%- for relationGroup in relationGroups -%}
+            {%- assign relation = relationGroup.name -%}
+
+            {%- comment -%}
+            Render items. If your _inventoryline.html sometimes outputs nothing
+            (because of filters), this capture naturally becomes empty.
+            {%- endcomment -%}
+            {%- capture relation_items -%}
+              {%- for item in relationGroup.items -%}
+                {%- include _inventoryline.html -%}
+              {%- endfor -%}
+            {%- endcapture -%}
+
+            {%- assign relation_items_stripped = relation_items | strip -%}
+            {%- if relation_items_stripped != "" -%}
+              <div class="inventory-relation-group" data-relation="{{ relation }}">
+                {%- if relation != "" -%}
+                  <h4 class="relation-heading" style="margin-left: 2em;">{{ relation }}</h4>
+                {%- endif -%}
+                {{ relation_items_stripped }}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endcapture -%}
+
+        {%- assign collection_body_stripped = collection_body | strip -%}
+        {%- if collection_body_stripped != "" -%}
+          <div class="inventory-collection-group" data-collection="{{ collection }}">
+            {%- if collection != "" -%}
+              <h3 class="collection-heading" style="margin-left: 1em;">{{ collection }}</h3>
+            {%- endif -%}
+            {{ collection_body_stripped }}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endcapture -%}
+
+    {%- assign type_body_stripped = type_body | strip -%}
+    {%- if type != "" and type_body_stripped != "" -%}
+      <div class="inventory-type-group" data-type="{{ type }}">
+        <h2 class="type-heading">{{ type }}</h2>
+        {{ type_body_stripped }}
+      </div>
+    {%- endif -%}
+  {%- endfor -%}
 </div>
 
 <div id="no-results-message" style="display:none; padding:2rem; text-align:center; font-weight:bold;">
-  The combination of attributes you have selected returned no results.
+  Nessun risultato trovato per la selezione delle caratteristiche. The combination of attributes you have selected returned no results.
 </div>
