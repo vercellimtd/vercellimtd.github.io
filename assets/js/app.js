@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", function () {
   const filterButtons = document.querySelectorAll(".filter-button");
   const filterCheckboxes = document.querySelectorAll(".format-checkbox");
@@ -44,15 +43,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         relations.forEach(relationGroup => {
           const items = relationGroup.querySelectorAll(".filter-simple-item");
-          const relationVisible = Array.from(items).some(i => i.style.display !== "none");
+          const relationVisible = Array.from(items).some(i => i.style.display === "block");
           relationGroup.style.display = relationVisible ? "block" : "none";
           if (relationVisible) collectionVisible = true;
         });
 
         // Show items without relation
-        const ungroupedItems = Array.from(collectionGroup.querySelectorAll("> .filter-simple-item"))
-          .filter(i => !i.closest(".inventory-relation-group"));
-        const showUngrouped = ungroupedItems.some(i => i.style.display !== "none");
+        const ungroupedItems = Array.from(collectionGroup.children) .filter(el => el.classList.contains("filter-simple-item"));
+        const showUngrouped = ungroupedItems.some(i => i.style.display === "block");
         if (showUngrouped) collectionVisible = true;
         ungroupedItems.forEach(i => i.style.display = showUngrouped ? "block" : "none");
 
@@ -61,9 +59,8 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       // Show items without collection
-      const ungroupedTypeItems = Array.from(typeGroup.querySelectorAll("> .filter-simple-item"))
-        .filter(i => !i.closest(".inventory-collection-group"));
-      const showTypeUngrouped = ungroupedTypeItems.some(i => i.style.display !== "none");
+      const ungroupedTypeItems = Array.from(typeGroup.children) .filter(el => el.classList.contains("filter-simple-item"));
+      const showTypeUngrouped = ungroupedTypeItems.some(i => i.style.display === "block");
       if (showTypeUngrouped) typeVisible = true;
       ungroupedTypeItems.forEach(i => i.style.display = showTypeUngrouped ? "block" : "none");
 
