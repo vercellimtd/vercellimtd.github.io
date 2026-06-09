@@ -1,0 +1,20 @@
+---
+layout: none
+---
+[
+  {% for item in site.data.MTDVInventario %}
+  {
+    "id": {{ forloop.index }},
+    "identifier": {{ item.Identifier | jsonify }},
+    "title": {{ item.Title | jsonify }},
+    "creator": {{ item.Creator | jsonify }},
+    "temporal": {{ item.Temporal | jsonify }},
+    "collection": {{ item.Collection | jsonify }},
+    "relation": {{ item.Relation | jsonify }},
+    "type": {{ item.Type | jsonify }},
+    "description": {{ item.Description | jsonify }},
+    "ceioa": {{ item.CEIOA | jsonify }},
+    "mibact": {{ item.MiBACT1998 | jsonify }}
+  }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+]

@@ -10,7 +10,12 @@
   excerpt:
   image:
 
-- title: Inventory/Inventario
+- title: Full Inventory/Inventario Completo
   url: /inventory
+  excerpt:
+  image:
+
+- title: Search/Cerca
+  url: /search
   excerpt:
   image:
