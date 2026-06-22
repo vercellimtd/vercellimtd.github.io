@@ -1,5 +1,5 @@
 ---
-title: Inventory/Inventario
+title: Inventory
 layout: page
 permalink: /inventory
 ---
@@ -25,157 +25,18 @@ permalink: /inventory
 {% endfor %}
 {% assign uniqueCategories = all_categories | uniq | sort %}
 
-<!-- Filters UI -->
-<div class="grid-container" style="margin-bottom:1rem;">
-  <div class="grid-x grid-padding-x grid-margin-x">
-    <div class="cell large-8 buttons-container">
-      {% for category in uniqueCategories %}
-      <button class="filter-button button small hollow secondary" data-category="{{ category }}">{{ category }}</button>
-      {% endfor %}
-    </div>
+<div class="grid-x">
+  <div class="cell medium-4 large-2">
+  
+  <!-- Filters UI -->
+{% include _filter-panel.html %}
+<button type="button" id="filter-toggle" class="filter-toggle-btn" 
+        aria-expanded="false" aria-controls="filter-panel">
+  Filter &amp; Search
+</button>
 
-<!-- START MANUAL CHECKBOXES 
-	<div class="cell large-4" id="filter-checkboxes" role="group" aria-label="hierarchical format checkboxes">
-        <div class="checkbox-wrapper">
-          <input type="checkbox" class="format-checkbox" data-level="type" data-value="Physical Objects/Oggetti fisicali" id="type-1">
-          <label for="type-1"><strong>Physical Objects/Oggetti fisicali</strong></label>
-        </div>
-          <div class="checkbox-wrapper" style="margin-left: 1em;">
-            <input type="checkbox" class="format-checkbox" data-level="collection" data-value="Dipinti" id="coll-1-1">
-            <label for="coll-1-1">Dipinti</label>
-          </div>
-            <div class="checkbox-wrapper" style="margin-left: 1em;">
-            <input type="checkbox" class="format-checkbox" data-level="collection" data-value="Legature" id="coll-1-2">
-            <label for="coll-1-2">Legature</label>
-          </div>
-            <div class="checkbox-wrapper" style="margin-left: 1em;">
-            <input type="checkbox" class="format-checkbox" data-level="collection" data-value="Reliquiari" id="coll-1-3">
-            <label for="coll-1-3">Reliquiari</label>
-           </div>
-            <div class="checkbox-wrapper" style="margin-left: 1em;">
-            <input type="checkbox" class="format-checkbox" data-level="collection" data-value="Rotoli Figurati" id="coll-1-4">
-            <label for="coll-1-4">Rotoli Figurati</label>
-          </div>
-            </div>
-            <div class="checkbox-wrapper" style="margin-left: 1em;">
-            <input type="checkbox" class="format-checkbox" data-level="collection" data-value="Sculture" id="coll-1-5">
-            <label for="coll-1-5">Sculture</label>
-          </div>
-            </div>
-            <div class="checkbox-wrapper" style="margin-left: 1em;">
-            <input type="checkbox" class="format-checkbox" data-level="collection" data-value="Sezione Archeologica" id="coll-1-6">
-            <label for="coll-1-6">Sezione Archeologica</label>
-          </div>
-            </div>
-            <div class="checkbox-wrapper" style="margin-left: 1em;">
-            <input type="checkbox" class="format-checkbox" data-level="collection" data-value="Suppellettili e Servizi Liturgici" id="coll-1-7">
-            <label for="coll-1-7">Suppellettili e Servizi Liturgici</label>
-          </div>
-            </div>
-            <div class="checkbox-wrapper" style="margin-left: 1em;">
-            <input type="checkbox" class="format-checkbox" data-level="collection" data-value="Tessuti e Paramenti" id="coll-1-8">
-            <label for="coll-1-8">Tessuti e Paramenti</label>
-            </div>
-            <div class="checkbox-wrapper" style="margin-left: 1em;">
-            <input type="checkbox" class="format-checkbox" data-level="collection" data-value="Varie" id="coll-1-9">
-            <label for="coll-1-9">Varie</label>
-          </div>
-            </div>
-          
-        
-          <div class="checkbox-wrapper">
-          <input type="checkbox" class="format-checkbox" data-level="type" data-value="Parchment/Pergamene" id="type-2">
-          <label for="type-2"><strong>Parchment/Pergamene</strong></label>
-        </div>
-          <div class="checkbox-wrapper" style="margin-left: 1em;">
-            <input type="checkbox" class="format-checkbox" data-level="collection" data-value="Atti Privati" id="coll-2-1">
-            <label for="coll-2-1">Atti Privati</label>
-          </div>
-            <div class="checkbox-wrapper" style="margin-left: 2em;">
-              <input type="checkbox" class="format-checkbox" data-level="relation" data-value="Pergamene" id="rel---1">
-              <label for="rel---1">Pergamene</label>
-            </div>
-            <div class="checkbox-wrapper" style="margin-left: 1em;">
-            <input type="checkbox" class="format-checkbox" data-level="collection" data-value="Atti Pubblici" id="coll-2-2">
-            <label for="coll-2-2">Atti Pubblici</label>
-          </div>
-            <div class="checkbox-wrapper" style="margin-left: 2em;">
-              <input type="checkbox" class="format-checkbox" data-level="relation" data-value="Bolle" id="rel---1">
-              <label for="rel---1">Bolle</label>
-            </div>
-            
-            <div class="checkbox-wrapper" style="margin-left: 2em;">
-              <input type="checkbox" class="format-checkbox" data-level="relation" data-value="Diplomi imperiali, regi e ducali" id="rel---2">
-              <label for="rel---2">Diplomi imperiali, regi e ducali</label>
-            </div>
-         <div class="checkbox-wrapper">
-          <input type="checkbox" class="format-checkbox" data-level="type" data-value="Codex/Codici" id="type-3">
-          <label for="type-3"><strong>Codex/Codici</strong></label>
-        </div>
-          <div class="checkbox-wrapper" style="margin-left: 1em;">
-            <input type="checkbox" class="format-checkbox" data-level="collection" data-value="Biblioteca Capitolare fondo manoscritti" id="coll-3-1">
-            <label for="coll-3-1">Biblioteca Capitolare fondo manoscritti</label>
-          </div>
-    </div>
-END MANUAL CHECKBOXES-->
-
-{% comment %} Auto-generate hierarchical format checkboxes for Type > Collection > Relation {% endcomment %}
-<div class="cell large-4" id="filter-checkboxes" role="group" aria-label="hierarchical format checkboxes">
-  {% assign groupedTypes = site.data.MTDVInventario | group_by: "Type" %}
-  {% for typeGroup in groupedTypes %}
-    {% assign type = typeGroup.name %}
-    {% if type and type != "" %}
-      {% assign type_id = type | slugify: 'ascii' %}
-
-      <div class="checkbox-wrapper">
-        <input type="checkbox"
-               class="format-checkbox"
-               data-level="type"
-               data-value="{{ type }}"
-               id="type-{{ type_id }}">
-        <label for="type-{{ type_id }}"><strong>{{ type }}</strong></label>
-      </div>
-
-      {% assign collections = typeGroup.items | map: "Collection" | uniq | sort %}
-      {% for collection in collections %}
-        {% if collection and collection != "" %}
-          {% assign coll_id = collection | slugify: 'ascii' %}
-
-          <div class="checkbox-wrapper" style="margin-left: 1em;">
-            <input type="checkbox"
-                   class="format-checkbox"
-                   data-level="collection"
-                   data-value="{{ collection }}"
-                   id="coll-{{ type_id }}-{{ coll_id }}">
-            <label for="coll-{{ type_id }}-{{ coll_id }}">{{ collection }}</label>
-          </div>
-
-          {% assign filtered_items = typeGroup.items | where: "Collection", collection %}
-          {% assign relations = filtered_items | map: "Relation" | uniq | sort %}
-          {% for relation in relations %}
-            {% if relation and relation != "" %}
-              {% assign rel_id = relation | slugify: 'ascii' %}
-
-              <div class="checkbox-wrapper" style="margin-left: 2em;">
-                <input type="checkbox"
-                       class="format-checkbox"
-                       data-level="relation"
-                       data-value="{{ relation }}"
-                       id="rel-{{ type_id }}-{{ coll_id }}-{{ rel_id }}">
-                <label for="rel-{{ type_id }}-{{ coll_id }}-{{ rel_id }}">{{ relation }}</label>
-              </div>
-            {% endif %}
-          {% endfor %}
-        {% endif %}
-      {% endfor %}
-    {% endif %}
-  {% endfor %}
 </div>
-
-
-  </div>
-</div>
-
+  <div class="cell medium-8 large-10">
 <!-- Inventory Listing -->
 <div id="inventory-sections">
   {%- assign typeGroups = site.data.MTDVInventario | group_by: "Type" -%}
@@ -249,4 +110,6 @@ END MANUAL CHECKBOXES-->
 
 <div id="no-results-message" style="display:none; padding:2rem; text-align:center; font-weight:bold;">
   Nessun risultato trovato per la selezione delle caratteristiche. The combination of attributes you have selected returned no results.
+</div>
+</div>
 </div>

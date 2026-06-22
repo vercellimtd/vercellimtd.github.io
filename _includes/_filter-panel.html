@@ -1,0 +1,183 @@
+{% comment %}
+  _filter-panel.html
+  Unified filter sidebar: search + century checkboxes (sorted) + type/collection/relation tree.
+  Replaces the two-column button/checkbox layout.
+  Requires: inventory-filter.js (drop-in replacement block in app.js)
+  Used by: VercelliMTD inventory page
+{% endcomment %}
+
+<div id="filter-panel" class="filter-panel" role="search" aria-label="Filter inventory">
+
+  {% comment %} ── Search ─────────────────────────────────────────────── {% endcomment %}
+  <div class="filter-section filter-section--search">
+    <label for="inventory-search" class="filter-label">Search</label>
+    <input
+      type="search"
+      id="inventory-search"
+      class="filter-search-input"
+      placeholder="Title, creator, identifier…"
+      autocomplete="off"
+      spellcheck="false"
+    >
+    <button type="button" id="filter-clear" class="filter-clear-btn" aria-label="Clear all filters" hidden>
+      Clear all filters
+    </button>
+  </div>
+
+  {% comment %} ── Century ────────────────────────────────────────────── {% endcomment %}
+  <div class="filter-section">
+    <h2 class="filter-section-heading">Date / Secolo</h2>
+    <ul class="filter-checklist" role="group" aria-label="Filter by century">
+
+      {% comment %}
+        Predefined chronological order. Liquid | sort on Roman numerals
+        gives alphabetical (IX before VII before VI), not chronological.
+        Any label not in this list falls through to the end.
+      {% endcomment %}
+      {% assign century_order = "IV-VII secolo/4th-7th century,VII secolo/7th century,VIII secolo/8th century,IX secolo/9th century,X secolo/10th century,XI secolo/11th century,XII secolo/12th century,XIII secolo/13th century,XIV secolo/14th century,XV secolo/15th century,XVI secolo/16th century,XVII secolo/17th century,XVIII secolo/18th century,XIX secolo/19th century,XX secolo/20th century,XXI secolo/21st century" | split: "," %}
+
+      {% assign all_categories = "" | split: "" %}
+      {% for item in site.data.MTDVInventario %}
+        {% assign item_cats = item.Categories | split: ", " %}
+        {% for cat in item_cats %}
+          {% assign cat_trimmed = cat | strip %}
+          {% unless all_categories contains cat_trimmed %}
+            {% assign all_categories = all_categories | push: cat_trimmed %}
+          {% endunless %}
+        {% endfor %}
+      {% endfor %}
+
+      {% comment %} Render in defined order first {% endcomment %}
+      {% for ordered_cat in century_order %}
+        {% if all_categories contains ordered_cat %}
+          {% assign cat_id = ordered_cat | slugify: 'ascii' %}
+          <li class="filter-checklist__item">
+            <label class="filter-check-label">
+              <input
+                type="checkbox"
+                class="filter-checkbox filter-checkbox--category"
+                data-filter-type="category"
+                data-value="{{ ordered_cat }}"
+                id="cat-{{ cat_id }}"
+              >
+              <span>{{ ordered_cat }}</span>
+            </label>
+          </li>
+        {% endif %}
+      {% endfor %}
+
+      {% comment %} Any categories not in the predefined list {% endcomment %}
+      {% for cat in all_categories %}
+        {% unless century_order contains cat %}
+          {% if cat != "" %}
+            {% assign cat_id = cat | slugify: 'ascii' %}
+            <li class="filter-checklist__item">
+              <label class="filter-check-label">
+                <input
+                  type="checkbox"
+                  class="filter-checkbox filter-checkbox--category"
+                  data-filter-type="category"
+                  data-value="{{ cat }}"
+                  id="cat-{{ cat_id }}"
+                >
+                <span>{{ cat }}</span>
+              </label>
+            </li>
+          {% endif %}
+        {% endunless %}
+      {% endfor %}
+
+    </ul>
+  </div>
+
+  {% comment %} ── Type / Collection / Relation tree ──────────────────── {% endcomment %}
+  <div class="filter-section">
+    <h2 class="filter-section-heading">Format / Formato</h2>
+    <ul class="filter-checklist filter-checklist--tree" role="group" aria-label="Filter by format">
+
+      {% assign groupedTypes = site.data.MTDVInventario | group_by: "Type" | sort: "name" %}
+      {% for typeGroup in groupedTypes %}
+        {% assign type = typeGroup.name %}
+        {% if type and type != "" %}
+          {% assign type_id = type | slugify: 'ascii' %}
+
+          <li class="filter-checklist__item filter-checklist__item--type">
+            <label class="filter-check-label filter-check-label--type">
+              <input
+                type="checkbox"
+                class="filter-checkbox filter-checkbox--format"
+                data-filter-type="format"
+                data-level="type"
+                data-value="{{ type }}"
+                id="type-{{ type_id }}"
+              >
+              <span>{{ type }}</span>
+            </label>
+
+            {% assign collections = typeGroup.items | map: "Collection" | uniq | sort %}
+            {% assign has_collections = false %}
+            {% for c in collections %}{% if c and c != "" %}{% assign has_collections = true %}{% endif %}{% endfor %}
+
+            {% if has_collections %}
+            <ul class="filter-checklist filter-checklist--children">
+              {% for collection in collections %}
+                {% if collection and collection != "" %}
+                  {% assign coll_id = collection | slugify: 'ascii' %}
+
+                  <li class="filter-checklist__item filter-checklist__item--collection">
+                    <label class="filter-check-label filter-check-label--collection">
+                      <input
+                        type="checkbox"
+                        class="filter-checkbox filter-checkbox--format"
+                        data-filter-type="format"
+                        data-level="collection"
+                        data-value="{{ collection }}"
+                        id="coll-{{ type_id }}-{{ coll_id }}"
+                      >
+                      <span>{{ collection }}</span>
+                    </label>
+
+                    {% assign filtered_items = typeGroup.items | where: "Collection", collection %}
+                    {% assign relations = filtered_items | map: "Relation" | uniq | sort %}
+                    {% assign has_relations = false %}
+                    {% for r in relations %}{% if r and r != "" %}{% assign has_relations = true %}{% endif %}{% endfor %}
+
+                    {% if has_relations %}
+                    <ul class="filter-checklist filter-checklist--children">
+                      {% for relation in relations %}
+                        {% if relation and relation != "" %}
+                          {% assign rel_id = relation | slugify: 'ascii' %}
+                          <li class="filter-checklist__item filter-checklist__item--relation">
+                            <label class="filter-check-label filter-check-label--relation">
+                              <input
+                                type="checkbox"
+                                class="filter-checkbox filter-checkbox--format"
+                                data-filter-type="format"
+                                data-level="relation"
+                                data-value="{{ relation }}"
+                                id="rel-{{ type_id }}-{{ coll_id }}-{{ rel_id }}"
+                              >
+                              <span>{{ relation }}</span>
+                            </label>
+                          </li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+            {% endif %}
+
+          </li>
+        {% endif %}
+      {% endfor %}
+
+    </ul>
+  </div>
+
+  {% comment %} ── Result count ───────────────────────────────────────── {% endcomment %}
+  <p id="filter-result-count" class="filter-result-count" aria-live="polite" aria-atomic="true"></p>
+</div>

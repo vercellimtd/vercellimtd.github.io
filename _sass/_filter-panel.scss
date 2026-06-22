@@ -1,0 +1,222 @@
+// _filter-panel.scss
+// Filter panel: search + century list + type/collection/relation tree
+// Mobile: full-width drawer toggled by .filter-toggle-btn
+// Desktop (large+): sidebar column, always visible
+// Add @import 'filter-panel'; to _app.scss
+
+// Foundation breakpoints (px)
+// medium: 640px, large: 1024px
+
+// ── Layout wrapper ───────────────────────────────────────────────────────────
+#inventory-layout {
+  align-items: flex-start;
+}
+
+// ── Mobile toggle button ─────────────────────────────────────────────────────
+.filter-toggle-btn {
+  display: none;
+
+  @media (max-width: 1023px) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4em;
+    width: 100%;
+    margin-bottom: 0.75rem;
+    padding: 0.6em 1em;
+    background: var(--color-accent, #8B6914);
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    &::after {
+      content: '▾';
+      font-size: 1.1em;
+      transition: transform 0.2s ease;
+    }
+
+    &[aria-expanded="true"]::after {
+      transform: rotate(-180deg);
+    }
+  }
+}
+
+// ── Panel container ───────────────────────────────────────────────────────────
+.filter-panel {
+  position: sticky;
+  top: 1rem;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  padding: 0 0.25rem 2rem 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-accent, #8B6914) transparent;
+
+  @media (max-width: 1023px) {
+    position: static;
+    max-height: 0;
+    overflow: hidden;
+    padding: 0;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+
+    &.is-open {
+      max-height: 9999px;
+      overflow-y: auto;
+      padding: 0 0 1rem 0;
+    }
+  }
+}
+
+// ── Section blocks ────────────────────────────────────────────────────────────
+.filter-section {
+  margin-bottom: 1.5rem;
+
+  & + & {
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-rule, #e0d8cc);
+  }
+}
+
+.filter-section-heading {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-meta, #888);
+  margin: 0 0 0.6rem 0;
+}
+
+// ── Search ────────────────────────────────────────────────────────────────────
+.filter-section--search {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.filter-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-meta, #888);
+}
+
+.filter-search-input {
+  width: 100%;
+  padding: 0.45em 0.65em;
+  border: 1px solid var(--color-rule, #e0d8cc);
+  border-radius: 3px;
+  font-size: 0.9rem;
+  background: var(--color-bg, #fff);
+  color: var(--color-text, #222);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-accent, #8B6914);
+    box-shadow: 0 0 0 2px rgba(139, 105, 20, 0.15);
+  }
+
+  &::placeholder {
+    color: var(--color-meta, #aaa);
+    font-style: italic;
+  }
+}
+
+.filter-clear-btn {
+  align-self: flex-start;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--color-accent, #8B6914);
+  font-size: 0.8rem;
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-text, #222);
+  }
+}
+
+// ── Checklist ─────────────────────────────────────────────────────────────────
+.filter-checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.filter-checklist__item {
+  margin: 0;
+  padding: 0;
+}
+
+.filter-check-label {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45em;
+  padding: 0.2em 0;
+  font-size: 0.875rem;
+  color: var(--color-text, #222);
+  cursor: pointer;
+  line-height: 1.35;
+
+  &:hover span {
+    color: var(--color-accent, #8B6914);
+  }
+
+  input[type="checkbox"] {
+    flex-shrink: 0;
+    margin: 0;
+    accent-color: var(--color-accent, #8B6914);
+    cursor: pointer;
+  }
+}
+
+.filter-check-label--type {
+  font-weight: 600;
+}
+
+.filter-check-label--collection {
+  font-weight: 400;
+}
+
+.filter-check-label--relation {
+  font-size: 0.825rem;
+  color: var(--color-meta, #666);
+}
+
+// ── Tree indentation ──────────────────────────────────────────────────────────
+.filter-checklist--tree {
+  > .filter-checklist__item--type {
+    margin-bottom: 0.3rem;
+  }
+}
+
+.filter-checklist--children {
+  padding-left: 1.1em;
+  border-left: 1px solid var(--color-rule, #e8e2d8);
+  margin: 0.1rem 0 0.3rem 0.35em;
+}
+
+// ── Result count ──────────────────────────────────────────────────────────────
+.filter-result-count {
+  font-size: 0.8rem;
+  color: var(--color-meta, #888);
+  margin: 0.5rem 0 0;
+  min-height: 1.2em;
+}
+
+// ── Active child indicator (set by JS) ────────────────────────────────────────
+.filter-checklist__item.has-active-child > .filter-check-label > span {
+  color: var(--color-accent, #8B6914);
+}
+
+// ── Reduced motion ────────────────────────────────────────────────────────────
+@media (prefers-reduced-motion: reduce) {
+  .filter-panel,
+  .filter-toggle-btn::after {
+    transition: none;
+  }
+}
