@@ -31,4 +31,7 @@
   {{ item.Description }}.
   {% if item.CEIOA %}CEI/OA: {{ item.CEIOA }}. {% endif %}
   {% if item.MiBACT1998 %}MiBACT 1988: {{ item.MiBACT1998 }}.{% endif %}
+  {% if item.MSSOnline %}MSS Online: <a href="{{ item.MSSOnline }}" target="_blank">{{ item.MSSOnline }}</a>. {% endif %}
+  {% if item.AltreRisorse %}Other resources/altre risorse: {{ item.AltreRisorse }}.{% endif %}
+  {% if item.OriginalEntry %}<em>Full MTD Inventory Entry/Inventario Completa: {{ item.OriginalEntry }}</em>.{% endif %}
 </div>
