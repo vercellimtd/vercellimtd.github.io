@@ -1,7 +1,5 @@
-
 {% capture FileName %}{{ item.url | split: '/' | last }}{% endcapture %}
 {% capture ItemID %}{{ FileName | split: '.' | first }}{% endcapture %}
-
 {%- assign format_list = "" | split: "," -%}
 {%- if item.Type and item.Type != "" -%}
   {%- assign format_list = format_list | push: item.Type -%}
@@ -12,7 +10,6 @@
 {%- if item.Relation and item.Relation != "" -%}
   {%- assign format_list = format_list | push: item.Relation -%}
 {%- endif -%}
-
 {%- assign catlist = "" | split: ',' -%}
 {% if item.Categories %}
   {% for cat in item.Categories %}
@@ -20,18 +17,33 @@
   {% endfor %}
 {% endif %}
 {% assign uniqueCategories = catlist | uniq %}
-
 <div class="cell filter-simple-item {{ item.Type }} {{ item.Collection | replace: ', ', ' ' }} {{ item.Relation }}"
      data-categories="{{ uniqueCategories | join: ',' }}"
      data-formats="{{ format_list | join: ',' }}"
      style="padding-top: 10px;">
+  
+  {% comment %} Title block {% endcomment %}
   {% if item.Identifier %}<strong>{{ item.Identifier }}.</strong> {% endif %}
-  <strong>{{ item.Title }}</strong>. <em>{{ item.Temporal }}</em> ({{ item.Collection }} {{ item.Relation }} {{ item.StoredInDisplay }}).
-  {{ item.Creator }}{% if item.Author %}, {{ item.Author }}{% endif %}.
-  {{ item.Description }}.
+  <strong>{{ item.Title }}</strong>. <em>{{ item.Temporal }}</em>
+  {%- if item.Location %} ; {{ item.Location }}{% endif %}.
+  ({{ item.Collection }} {{ item.Relation }} {{ item.StoredInDisplay }}).
+  
+  {% comment %} Creator/Author block {% endcomment %}
+  {{ item.Creator }}
+  {%- if item.Author %}, {{ item.Author }}{% endif %}.
+  
+  {% comment %} Description block with Notes and AltreRisorse {% endcomment %}
+  {{ item.Description }}
+  {%- if item.Notes %} ; {{ item.Notes }}{% endif %}
+  {%- if item.AltreRisorse %} ; {{ item.AltreRisorse }}{% endif %}.
+  
+  {% comment %} Format and metadata block {% endcomment %}
+  {% if item.Format %}{{ item.Format }}. {% endif %}
   {% if item.CEIOA %}CEI/OA: {{ item.CEIOA }}. {% endif %}
-  {% if item.MiBACT1998 %}MiBACT 1988: {{ item.MiBACT1998 }}.{% endif %}
+  {% if item.MiBACT1998 %}MiBACT 1988: {{ item.MiBACT1998 }}. {% endif %}
   {% if item.MSSOnline %}MSS Online: <a href="{{ item.MSSOnline }}" target="_blank">{{ item.MSSOnline }}</a>. {% endif %}
-  {% if item.AltreRisorse %}Other resources/altre risorse: {{ item.AltreRisorse }}.{% endif %}
-  {% if item.OriginalEntry %}<em>Full MTD Inventory Entry/Inventario Completa: {{ item.OriginalEntry }}</em>.{% endif %}
+  {% if item.GoogleAandC %}Google Arts & Culture: <a href="{{ item.GoogleAandC }}" target="_blank">{{ item.GoogleAandC }}</a>. {% endif %}
+  
+  {% comment %} Original entry block {% endcomment %}
+  {% if item.OriginalEntry and page.revise %}<em>Full MTD Inventory Entry/Inventario Completa: {{ item.OriginalEntry }}</em>.{% endif %}
 </div>
